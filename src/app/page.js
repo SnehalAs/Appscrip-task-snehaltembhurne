@@ -1,94 +1,181 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Head from "next/head";
 import styles from "./page.module.css";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isOpen, setIsOpen] = useState({
+    categories: false,
+    price: false,
+    rating: false,
+  });
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("https://fakestoreapi.com/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data));
+  }, []);
+
+  const toggleDropdown = (filter) => {
+    setIsOpen({ ...isOpen, [filter]: !isOpen[filter] });
+  };
+
+  return (
+    <div>
+      <Head>
+        <title>Discover Our Products</title>
+        <meta
+          name="description"
+          content="Explore our latest collection of products including bags, shoes, and accessories."
+        />
+      </Head>
+
+      <nav className={styles.navbar}>
+        <div className={styles.logo}>LOGO</div>
+        <ul className={styles.navLinks}>
+          <li>
+            <a href="#">Home</a>
+          </li>
+          <li>
+            <a href="#">Explore</a>
+          </li>
+          <li>
+            <a href="#">Help</a>
+          </li>
+          <li>
+            <a href="#">Search</a>
+          </li>
+        </ul>
+        <div className={styles.userActions}>
+          <button className={styles.loginBtn}>Login</button>
+          <button className={styles.cartBtn}>Cart</button>
+        </div>
+      </nav>
+
+      <header className={styles.header}>
+        <h1>Discover Our Products</h1>
+      </header>
+
+      <main className={styles.main}>
+        <div className={styles.container}>
+          <div className={styles.sidebar}>
+            <h2>Filters</h2>
+            <div className={styles.filterSection}>
+              <h3 onClick={() => toggleDropdown("categories")}>Categories</h3>
+              {isOpen.categories && (
+                <ul>
+                  <li>Bags</li>
+                  <li>Shoes</li>
+                  <li>Accessories</li>
+                </ul>
+              )}
+            </div>
+
+            <div className={styles.filterSection}>
+              <h3 onClick={() => toggleDropdown("price")}>Price</h3>
+              {isOpen.price && (
+                <div>
+                  <input type="range" min="0" max="1000" />
+                </div>
+              )}
+            </div>
+
+            <div className={styles.filterSection}>
+              <h3 onClick={() => toggleDropdown("rating")}>Rating</h3>
+              {isOpen.rating && (
+                <ul>
+                  <li>4 stars & above</li>
+                  <li>3 stars & above</li>
+                </ul>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.productList}>
+            {products.map((product) => (
+              <div className={styles.productCard} key={product.id}>
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className={styles.productImage}
+                />
+                <h3 className={styles.productTitle}>{product.title}</h3>
+                <p className={styles.productPrice}>${product.price}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
+
       <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        <div className={styles.footerTop}>
+          <div className={styles.footerColumn}>
+            <h3>Shop</h3>
+            <ul>
+              <li>
+                <a href="#">Bags</a>
+              </li>
+              <li>
+                <a href="#">Shoes</a>
+              </li>
+              <li>
+                <a href="#">Accessories</a>
+              </li>
+            </ul>
+          </div>
+
+          <div className={styles.footerColumn}>
+            <h3>Help</h3>
+            <ul>
+              <li>
+                <a href="#">Customer Service</a>
+              </li>
+              <li>
+                <a href="#">Size Guide</a>
+              </li>
+              <li>
+                <a href="#">Shipping Information</a>
+              </li>
+            </ul>
+          </div>
+
+          <div className={styles.footerColumn}>
+            <h3>About Us</h3>
+            <ul>
+              <li>
+                <a href="#">Company Info</a>
+              </li>
+              <li>
+                <a href="#">Careers</a>
+              </li>
+              <li>
+                <a href="#">Press</a>
+              </li>
+            </ul>
+          </div>
+
+          <div className={styles.footerColumn}>
+            <h3>Follow Us</h3>
+            <div className={styles.socialIcons}>
+              <a href="#">
+                <img src="/facebook-icon.png" alt="Facebook" />
+              </a>
+              <a href="#">
+                <img src="/twitter-icon.png" alt="Twitter" />
+              </a>
+              <a href="#">
+                <img src="/instagram-icon.png" alt="Instagram" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.footerBottom}>
+          <p>&copy; 2024 Company Name. All Rights Reserved.</p>
+        </div>
       </footer>
     </div>
   );
